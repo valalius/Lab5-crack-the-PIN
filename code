@@ -1,0 +1,45 @@
+using System;
+using System.Security.Cryptography;
+using System.Text;
+
+public class CodeWars
+{
+    public static string crack(string hash)
+    {
+        // Об'єкт для обчислення MD5 хешу
+        using (MD5 md5 = MD5.Create())
+        {
+            // Усі можливі комбінації від 0 до 99999
+            for (int i = 0; i <= 99999; i++)
+            {
+                // Форматування числа як 5-значного рядка
+                string pin = i.ToString("D5");
+                
+                // PIN-код -> масив байтів
+                byte[] inputBytes = Encoding.ASCII.GetBytes(pin);
+                
+                // Хеш для поточної комбінації
+                byte[] hashBytes = md5.ComputeHash(inputBytes);
+
+                // Отримані байти хешу у звичайний шістнадцятковий рядок
+                StringBuilder sb = new StringBuilder();
+                for (int j = 0; j < hashBytes.Length; j++)
+                {
+                    // x2 для виведення кожного байта у вигляді двох символів у нижньому регістрі
+                    sb.Append(hashBytes[j].ToString("x2"));
+                }
+                string generatedHash = sb.ToString();
+
+                // Порівняння згенерованого хешу з цільовим хешем
+                if (generatedHash.Equals(hash, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Якщо хеші збігаються, знайдено правильний PIN-код
+                    return pin;
+                }
+            }
+        }
+
+        // Якщо PIN-код не знайдено 
+        return null;
+    }
+}
